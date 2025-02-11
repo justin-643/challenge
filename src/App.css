@@ -1,0 +1,21 @@
+/* App.css */
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.completed {
+  background-color: #4caf50; /* Green for completed days */
+  color: white;
+  border-radius: 50%;
+}
+
+.react-calendar {
+  margin: 20px auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+.react-calendar__tile {
+  padding: 10px;
+}
