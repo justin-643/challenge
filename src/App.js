@@ -1,54 +1,41 @@
-// App.js
-import React, { useState, useEffect } from 'react';
-import Calendar from 'react-calendar';
-import './App.css';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Navbar from './Components/Navbar';
+import Home from './Components/Home';
+import Services from './Components/Service';
+import About from './Components/About';
+import Contact from './Components/Contact';
+import Footer from './Components/Footer';
+import Login from './Components/Login';
+import Admin from './Components/Admin';
 
 function App() {
-  // Initialize the state for challenge progress (storing completed days)
-  const [completedDays, setCompletedDays] = useState(new Set());
+  // State to check if the user is authenticated
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Function to load completed days from localStorage
-  useEffect(() => {
-    const savedCompletedDays = JSON.parse(localStorage.getItem('completedDays'));
-    if (savedCompletedDays) {
-      setCompletedDays(new Set(savedCompletedDays));
-    }
-  }, []);
-
-  // Function to handle marking a day as completed
-  const markDayCompleted = (date) => {
-    const newCompletedDays = new Set(completedDays);
-    const dateString = date.toDateString(); // Convert date to string for easier comparison
-    if (newCompletedDays.has(dateString)) {
-      newCompletedDays.delete(dateString); // Unmark if already marked
-    } else {
-      newCompletedDays.add(dateString); // Mark the day
-    }
-    setCompletedDays(newCompletedDays);
-
-    // Save the updated completed days in localStorage
-    localStorage.setItem('completedDays', JSON.stringify(Array.from(newCompletedDays)));
-  };
-
-  // Custom tile class for marking completed days
-  const tileClassName = ({ date, view }) => {
-    if (view === 'month') {
-      const dateString = date.toDateString();
-      return completedDays.has(dateString) ? 'completed' : null;
-    }
-    return null;
+  // Protected Route Component
+  const ProtectedRoute = ({ element, redirectTo }) => {
+    return isAuthenticated ? element : <Navigate to={redirectTo} />;
   };
 
   return (
-    <div className="App">
-      <h1>30-Day Challenge Calendar</h1>
-      <p>Mark each day as you complete your challenge!</p>
-      <Calendar
-        onClickDay={markDayCompleted} // Mark day when clicked
-        tileClassName={tileClassName} // Add custom styles for completed days
-      />
-      <p>Days Completed: {completedDays.size}</p>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-neutral-50">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+          
+          {/* Protected Admin Route */}
+          <Route path="/Admin" element={<ProtectedRoute element={<Admin />} redirectTo="/Admin" />} />
+        </Routes>
+        <br />
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
